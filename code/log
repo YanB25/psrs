@@ -1,4 +1,4 @@
-mpirun -n 5 ./psrs.out "../data/input" 35
+mpirun -n 5 ./psrs.out "binary_input"
 [0]: 1
 [0]: 2
 [0]: 3
@@ -11,30 +11,6 @@ mpirun -n 5 ./psrs.out "../data/input" 35
 [0] pivot 3
 [0] pivot 4
 [0] pivot 5
-[1]: 4
-[1]: 5
-[1]: 7
-[1]: 9
-[1]: 10
-[1]: 18
-[1]: 22
-[1] pivot 4
-[1] pivot 5
-[1] pivot 7
-[1] pivot 9
-[1] pivot 10
-[2]: 7
-[2]: 8
-[2]: 10
-[2]: 17
-[2]: 19
-[2]: 20
-[2]: 34
-[2] pivot 7
-[2] pivot 8
-[2] pivot 10
-[2] pivot 17
-[2] pivot 19
 [3]: 2
 [3]: 3
 [3]: 13
@@ -47,6 +23,25 @@ mpirun -n 5 ./psrs.out "../data/input" 35
 [3] pivot 13
 [3] pivot 15
 [3] pivot 25
+[2]: 7
+[2]: 8
+[2]: 10
+[2]: 17
+[2]: 19
+[2]: 20
+[2]: 34
+[2] pivot 7
+[2] pivot 8
+[2] pivot 10
+[2] pivot 17
+[2] pivot 19
+[1]: 4
+[1]: 5
+[1]: 7
+[1]: 9
+[1]: 10
+[1]: 18
+[1]: 22
 [4]: 15
 [4]: 17
 [4]: 20
@@ -59,7 +54,11 @@ mpirun -n 5 ./psrs.out "../data/input" 35
 [4] pivot 20
 [4] pivot 24
 [4] pivot 25
-I am [4] and get main pivot 4
+[1] pivot 4
+[1] pivot 5
+[1] pivot 7
+[1] pivot 9
+[1] pivot 10
 all pivot 1
 all pivot 2
 all pivot 2
@@ -95,25 +94,10 @@ I am [0] and get main pivot 19
 [0] send_count_array[2] 1
 [0] send_count_array[3] 1
 [0] send_count_array[4] 0
-I am [2] and get main pivot 4
-I am [2] and get main pivot 7
-I am [2] and get main pivot 13
-I am [2] and get main pivot 19
-[2] my array size is 7
-[2] send_count_array[0] 0
-[2] send_count_array[1] 0
-[2] send_count_array[2] 3
-[2] send_count_array[3] 1
-[2] send_count_array[4] 3
+I am [4] and get main pivot 4
 I am [4] and get main pivot 7
 I am [4] and get main pivot 13
 I am [4] and get main pivot 19
-[4] my array size is 7
-[4] send_count_array[0] 0
-[4] send_count_array[1] 0
-[4] send_count_array[2] 0
-[4] send_count_array[3] 2
-[4] send_count_array[4] 5
 I am [1] and get main pivot 4
 I am [1] and get main pivot 7
 I am [1] and get main pivot 13
@@ -124,6 +108,22 @@ I am [1] and get main pivot 19
 [1] send_count_array[2] 3
 [1] send_count_array[3] 1
 [1] send_count_array[4] 1
+[4] my array size is 7
+[4] send_count_array[0] 0
+[4] send_count_array[1] 0
+[4] send_count_array[2] 0
+[4] send_count_array[3] 2
+[4] send_count_array[4] 5
+I am [2] and get main pivot 4
+I am [2] and get main pivot 7
+I am [2] and get main pivot 13
+I am [2] and get main pivot 19
+[2] my array size is 7
+[2] send_count_array[0] 0
+[2] send_count_array[1] 0
+[2] send_count_array[2] 3
+[2] send_count_array[3] 1
+[2] send_count_array[4] 3
 I am [3] and get main pivot 4
 I am [3] and get main pivot 7
 I am [3] and get main pivot 13
@@ -145,39 +145,6 @@ from [0]: rdispls[3] = 3
 from [0]: all_count_array[4] = 0
 from [0]: rdispls[4] = 5
 [0] I should receiv size 5
-from [2]: all_count_array[0] = 1
-from [2]: rdispls[0] = 0
-from [2]: all_count_array[1] = 3
-from [2]: rdispls[1] = 1
-from [2]: all_count_array[2] = 3
-from [2]: rdispls[2] = 4
-from [2]: all_count_array[3] = 0
-from [2]: rdispls[3] = 7
-from [2]: all_count_array[4] = 0
-from [2]: rdispls[4] = 7
-[2] I should receiv size 7
-from [3]: all_count_array[0] = 1
-from [3]: rdispls[0] = 0
-from [3]: all_count_array[1] = 1
-from [3]: rdispls[1] = 1
-from [3]: all_count_array[2] = 1
-from [3]: rdispls[2] = 2
-from [3]: all_count_array[3] = 2
-from [3]: rdispls[3] = 3
-from [3]: all_count_array[4] = 2
-from [3]: rdispls[4] = 5
-[3] I should receiv size 7
-from [4]: all_count_array[0] = 0
-from [4]: rdispls[0] = 0
-from [4]: all_count_array[1] = 1
-from [4]: rdispls[1] = 0
-from [4]: all_count_array[2] = 3
-from [4]: rdispls[2] = 1
-from [4]: all_count_array[3] = 3
-from [4]: rdispls[3] = 4
-from [4]: all_count_array[4] = 5
-from [4]: rdispls[4] = 7
-[4] I should receiv size 12
 from [1]: all_count_array[0] = 2
 from [1]: rdispls[0] = 0
 from [1]: all_count_array[1] = 2
@@ -190,6 +157,17 @@ from [1]: all_count_array[4] = 0
 from [1]: rdispls[4] = 4
 [1] I should receiv size 4
 [1] recv 4
+from [4]: all_count_array[0] = 0
+from [4]: rdispls[0] = 0
+from [4]: all_count_array[1] = 1
+from [4]: rdispls[1] = 0
+from [4]: all_count_array[2] = 3
+from [4]: rdispls[2] = 1
+from [4]: all_count_array[3] = 3
+from [4]: rdispls[3] = 4
+from [4]: all_count_array[4] = 5
+from [4]: rdispls[4] = 7
+[4] I should receiv size 12
 [1] recv 5
 [1] recv 4
 [1] recv 5
@@ -197,16 +175,28 @@ from [1]: rdispls[4] = 4
 [1] sorted 4
 [1] sorted 5
 [1] sorted 5
-[0] recv 1
-[0] recv 2
-[0] recv 3
-[0] recv 2
-[0] recv 3
-[0] sorted 1
-[0] sorted 2
-[0] sorted 2
-[0] sorted 3
-[0] sorted 3
+from [3]: all_count_array[0] = 1
+from [3]: rdispls[0] = 0
+from [3]: all_count_array[1] = 1
+from [3]: rdispls[1] = 1
+from [3]: all_count_array[2] = 1
+from [3]: rdispls[2] = 2
+from [3]: all_count_array[3] = 2
+from [3]: rdispls[3] = 3
+from [3]: all_count_array[4] = 2
+from [3]: rdispls[4] = 5
+[3] I should receiv size 7
+from [2]: all_count_array[0] = 1
+from [2]: rdispls[0] = 0
+from [2]: all_count_array[1] = 3
+from [2]: rdispls[1] = 1
+from [2]: all_count_array[2] = 3
+from [2]: rdispls[2] = 4
+from [2]: all_count_array[3] = 0
+from [2]: rdispls[3] = 7
+from [2]: all_count_array[4] = 0
+from [2]: rdispls[4] = 7
+[2] I should receiv size 7
 [2] recv 8
 [2] recv 7
 [2] recv 9
@@ -221,20 +211,6 @@ from [1]: rdispls[4] = 4
 [2] sorted 9
 [2] sorted 10
 [2] sorted 10
-[3] recv 14
-[3] recv 18
-[3] recv 17
-[3] recv 13
-[3] recv 15
-[3] recv 15
-[3] recv 17
-[3] sorted 13
-[3] sorted 14
-[3] sorted 15
-[3] sorted 15
-[3] sorted 17
-[3] sorted 17
-[3] sorted 18
 [4] recv 22
 [4] recv 19
 [4] recv 20
@@ -259,3 +235,27 @@ from [1]: rdispls[4] = 4
 [4] sorted 28
 [4] sorted 29
 [4] sorted 34
+[0] recv 1
+[0] recv 2
+[0] recv 3
+[0] recv 2
+[0] recv 3
+[0] sorted 1
+[0] sorted 2
+[0] sorted 2
+[0] sorted 3
+[0] sorted 3
+[3] recv 14
+[3] recv 18
+[3] recv 17
+[3] recv 13
+[3] recv 15
+[3] recv 15
+[3] recv 17
+[3] sorted 13
+[3] sorted 14
+[3] sorted 15
+[3] sorted 15
+[3] sorted 17
+[3] sorted 17
+[3] sorted 18

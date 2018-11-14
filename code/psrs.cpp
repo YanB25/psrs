@@ -64,7 +64,11 @@ int main(int argc, char* argv[]) {
     ul_t* array = NULL;
     ul_t* my_array = NULL;
     ul_t SIZE;
-    sscanf(argv[2], "%lu", &SIZE);
+    // sscanf(argv[2], "%lu", &SIZE);
+
+    FILE* inputfile;
+    inputfile = fopen(argv[1], "rb");
+    fread(&SIZE, sizeof(ul_t), 1, inputfile);
 
     int* scatterv_size_array = scatterv_size(SIZE, world_size);
     int* scatterv_dipl_array = NULL;
@@ -72,18 +76,20 @@ int main(int argc, char* argv[]) {
     if (my_rank == 0) {
         scatterv_dipl_array = scatterv_dipl(scatterv_size_array, world_size);
 
-        FILE* inputfile;
-        inputfile = fopen(argv[1], "r");
-        if (!inputfile) {
-            printf("file not found %s, abort.\n", argv[1]);
-            return 1;
-        }
+        // FILE* inputfile;
+        // inputfile = fopen(argv[1], "r");
+        // if (!inputfile) {
+        //     printf("file not found %s, abort.\n", argv[1]);
+        //     return 1;
+        // }
+        fseek(inputfile, sizeof(ul_t), SEEK_SET);
 
         array = (ul_t*) malloc(sizeof(ul_t) * SIZE);
 
-        for (ul_t i = 0; i < SIZE; ++i) {
-            fscanf(inputfile, "%lu", &array[i]);
-        }
+        fread(array, sizeof(ul_t), SIZE, inputfile);
+        // for (ul_t i = 0; i < SIZE; ++i) {
+        //     fscanf(inputfile, "%lu", &array[i]);
+        // }
     }
     my_array = (ul_t*) malloc(sizeof(ul_t) * scatterv_size_array[my_rank]);
 
