@@ -150,8 +150,8 @@ int main(int argc, char* argv[]) {
     }
     send_count_array[world_size - 1] = mySize - before_count_sum;
     for (int i = 0; i < world_size; ++i) {
-        printf("[%d] send_count_array[%d] %d\n", my_rank, i, send_count_array[i]);
-        printf("[%d] sdispls array[%d] %d\n", my_rank, i, sdispls_array[i]);
+        // printf("[%d] send_count_array[%d] %d\n", my_rank, i, send_count_array[i]);
+        // printf("[%d] sdispls array[%d] %d\n", my_rank, i, sdispls_array[i]);
     }
 
     // step7: global swap.
@@ -171,6 +171,7 @@ int main(int argc, char* argv[]) {
         rdispls[i] = rdispls[i - 1] + all_count_array[i - 1];
     }
     for (int i = 0; i < world_size; ++i) {
+        printf("from [%d]: all_count_array[%d] = %d\n", my_rank, i, all_count_array[i]);
         printf("from [%d]: rdispls[%d] = %d\n", my_rank, i, rdispls[i]);
     }
     printf("[%d] I should receiv size %d\n", my_rank, my_recv_count);
