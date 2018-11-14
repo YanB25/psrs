@@ -3,7 +3,18 @@
 #include <cstdlib>
 #include <cassert>
 #include <cstring>
+#include <queue>
+using std::priority_queue;
 #define ul_t unsigned long
+struct State {
+    ul_t data;
+    int queue_id;
+    State (ul_t d, int id): data(d), queue_id(id) {}    
+    bool operator<(const State& rhs) const {
+        return data > rhs.data;
+    }
+};
+
 int* scatterv_size(int size, int world_size) {
     /* 
     * return the scatter size used in mpi_scatterv
@@ -179,7 +190,6 @@ int main(int argc, char* argv[]) {
     MPI_Alltoallv(my_array, send_count_array, sdispls_array, MPI_UNSIGNED_LONG,
         my_swap_array, all_count_array, rdispls, MPI_UNSIGNED_LONG, MPI_COMM_WORLD);
 
-    free(all_count_array);
 
     for (int i = 0; i < my_recv_count; ++i) {
         printf("[%d] recv %lu\n", my_rank, my_swap_array[i]);
@@ -189,20 +199,36 @@ int main(int argc, char* argv[]) {
     int* queue_beg = (int*) malloc(sizeof(int) * world_size);
     memcpy(queue_beg, rdispls, sizeof(int) * world_size);
 
-    // Node* node = NULL;
-    // int idx = 0;
-    // for (int i = 0; i < world_size; ++i) {
-    //     int delta = 0;
-    //     while (queue_beg[i] + delta < rdispls[i]) {
-    //         if (!node) {
-    //             node = newNode(i, my_array[idx++]);
-    //         } else {
-    //             push(&node, i, my_array[idx++]);
-    //         }
-    //         delta++;
-    //     }
-    // }
-    // Node* pq_head = newNode
+    priority_queue<State> pq;
+    int idx = 0;
+    for (int i = 0; i < world_size; ++i) {
+        if (all_count_array[i] != 0) {
+            pq.push(State(my_swap_array[rdispls[i]], i));
+        }
+    }
+
+
+    ul_t* result = (ul_t*) malloc(sizeof(ul_t) * my_recv_count);
+    idx = 0;
+    while (!pq.empty()) {
+        State top = pq.top(); pq.pop();
+        // printf("-- [%d] %lu : %d\n", my_rank, top.data, top.queue_id);
+        ul_t data = top.data;
+        int queue_id = top.queue_id;
+        result[idx++] = data;
+        queue_beg[queue_id]++;
+        bool notFull = (queue_id != world_size - 1 && queue_beg[queue_id] < rdispls[queue_id + 1])
+            || (queue_id == world_size - 1 && queue_beg[queue_id] < my_recv_count);
+        if (notFull) {
+            pq.push(State(my_swap_array[queue_beg[queue_id]], queue_id));
+        }
+    }
+    for (int i = 0; i < my_recv_count; ++i) {
+        printf("[%d] sorted %lu\n", my_rank, result[i]);
+    }
+
+    free(all_count_array);
+
     free(queue_beg);
 
     free(my_swap_array);
