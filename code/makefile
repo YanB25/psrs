@@ -10,6 +10,16 @@ psrs.o: psrs.cpp
 run: psrs.out
 	${RUN} -n 5 ./$< "../data/input" 35
 
+gendata.out: gendata.c
+	gcc -o $@ $<
+gen:
+	./gendata.out
+
+testread.out: testread.c
+	gcc -o $@ $<
+test:
+	./testread.out
+
 clean:
 	find . -type f -name "*.o" -delete
 	find . -type f -name "*.out" -delete
