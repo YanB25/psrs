@@ -1,11 +1,10 @@
 #include <mpi.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <assert.h>
-#include <string.h>
+#include <cstdio>
+#include <cstdlib>
+#include <cassert>
+#include <cstring>
 #include "priority_queue.h"
 #define ul_t unsigned long
-struct Node;
 int* scatterv_size(int size, int world_size) {
     /* 
     * return the scatter size used in mpi_scatterv

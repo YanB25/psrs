@@ -1,14 +1,11 @@
 all: psrs.out
-CC=mpicc
+CC=mpic++
 # CCFLAG="-std=C99"
 RUN=mpirun
-psrs.out: psrs.o priority_queue.o priority_queue.h
+psrs.out: psrs.o 
 	${CC} -o $@ $^
-psrs.o: psrs.c
+psrs.o: psrs.cpp
 	${CC} ${CCFLAG} -c -o $@ $< 
-priority_queue.o: priority_queue.c priority_queue.h
-	${CC} ${CCFLAG} -c -o $@ $<
-
 
 run: psrs.out
 	${RUN} -n 3 ./$< "../data/input" 26
