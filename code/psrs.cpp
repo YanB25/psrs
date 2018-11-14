@@ -61,13 +61,20 @@ int main(int argc, char* argv[]) {
     int my_rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
 
+    double begin_time = MPI_Wtime();
+    if (my_rank == 0) {
+        printf("begin.\n");
+    }
+
     ul_t* array = NULL;
     ul_t* my_array = NULL;
     ul_t SIZE;
-    // sscanf(argv[2], "%lu", &SIZE);
 
     FILE* inputfile;
     inputfile = fopen(argv[1], "rb");
+    if (!inputfile) {
+        printf("ERROR ! no such file %s\n", argv[1]);
+    }
     fread(&SIZE, sizeof(ul_t), 1, inputfile);
 
     int* scatterv_size_array = scatterv_size(SIZE, world_size);
@@ -76,22 +83,18 @@ int main(int argc, char* argv[]) {
     if (my_rank == 0) {
         scatterv_dipl_array = scatterv_dipl(scatterv_size_array, world_size);
 
-        // FILE* inputfile;
-        // inputfile = fopen(argv[1], "r");
-        // if (!inputfile) {
-        //     printf("file not found %s, abort.\n", argv[1]);
-        //     return 1;
-        // }
         fseek(inputfile, sizeof(ul_t), SEEK_SET);
 
         array = (ul_t*) malloc(sizeof(ul_t) * SIZE);
 
         fread(array, sizeof(ul_t), SIZE, inputfile);
-        // for (ul_t i = 0; i < SIZE; ++i) {
-        //     fscanf(inputfile, "%lu", &array[i]);
-        // }
     }
     my_array = (ul_t*) malloc(sizeof(ul_t) * scatterv_size_array[my_rank]);
+
+    double step0 = MPI_Wtime();
+    if (my_rank == 0) {
+        printf("finished step 0 data prepared. elapse %lf\n", step0-begin_time);
+    }
 
     // step1: divide averagely
     MPI_Scatterv(array, scatterv_size_array,
@@ -100,12 +103,22 @@ int main(int argc, char* argv[]) {
     free(array);
     free(scatterv_dipl_array);
 
+    double step1 = MPI_Wtime();
+    if (my_rank == 0) {
+        printf("fnished step 1 divide averagely. elapse %lf\n", step1-begin_time);
+    }
+
     // step2: local sort
     qsort((void*)my_array, scatterv_size_array[my_rank], 
         sizeof(ul_t), cmp);
 
-    for (int i = 0; i < scatterv_size_array[my_rank]; ++i) {
-        printf("[%d]: %lu\n", my_rank, my_array[i]);
+    // for (int i = 0; i < scatterv_size_array[my_rank]; ++i) {
+        // printf("[%d]: %lu\n", my_rank, my_array[i]);
+    // }
+
+    double step2 = MPI_Wtime();
+    if (my_rank == 0) {
+        printf("finished step 2 local sort. elapse %lf\n", step2-begin_time);
     }
 
     // step3: choose pivot
@@ -113,7 +126,12 @@ int main(int argc, char* argv[]) {
     ul_t step_size = scatterv_size_array[my_rank] / world_size;
     for (ul_t i = 0; i < world_size; ++i) {
         pivot_array[i] = my_array[i * step_size];
-        printf("[%d] pivot %lu\n", my_rank, pivot_array[i]);
+        // printf("[%d] pivot %lu\n", my_rank, pivot_array[i]);
+    }
+
+    double step3 = MPI_Wtime();
+    if (my_rank == 0) {
+        printf("finished step 3 choose pivot. elapse %lf\n", step3-begin_time);
     }
 
     // step4: gather all and sort all the samples from p
@@ -124,8 +142,11 @@ int main(int argc, char* argv[]) {
     if (my_rank == 0) {
         qsort((void*)all_pivot, world_size*world_size, sizeof(ul_t), cmp);
         for (ul_t i = 0; i < world_size * world_size; ++i) {
-            printf("all pivot %lu\n", all_pivot[i]);
+            // printf("all pivot %lu\n", all_pivot[i]);
         }
+
+        double step4 = MPI_Wtime();
+        printf("finished step 4 gather all and sort. elapse %lf\n", step4-begin_time);
 
         //step5: send main pivot to all process
         for (int i = 0; i < world_size - 1; ++i) {
@@ -134,7 +155,12 @@ int main(int argc, char* argv[]) {
     }
     MPI_Bcast(main_pivot, world_size - 1, MPI_UNSIGNED_LONG, 0, MPI_COMM_WORLD);
     for (int i = 0; i < world_size-1; ++i) {
-        printf("I am [%d] and get main pivot %lu\n", my_rank, main_pivot[i]);
+        // printf("I am [%d] and get main pivot %lu\n", my_rank, main_pivot[i]);
+    }
+
+    double step5 = MPI_Wtime();
+    if (my_rank == 0) {
+        printf("finished step 5 send main privot. elapse %lf\n", step5 - begin_time);
     }
 
     // step6: devide by main pivot.
@@ -143,7 +169,7 @@ int main(int argc, char* argv[]) {
     int* sdispls_array = (int*) malloc(sizeof(int) * world_size);
     memset(sdispls_array, 0, sizeof(int) * world_size);
     int mySize = scatterv_size_array[my_rank];
-    printf("[%d] my array size is %d\n", my_rank, mySize);
+    // printf("[%d] my array size is %d\n", my_rank, mySize);
     int myidx = 0;
     sdispls_array[0] = 0;
     // int before_count_sum = 0;
@@ -166,9 +192,14 @@ int main(int argc, char* argv[]) {
         before_disp_sum += send_count_array[i];
     }
     // send_count_array[world_size - 1] = mySize - before_count_sum;
-    for (int i = 0; i < world_size; ++i) {
-        printf("[%d] send_count_array[%d] %d\n", my_rank, i, send_count_array[i]);
-        // printf("[%d] sdispls array[%d] %d\n", my_rank, i, sdispls_array[i]);
+    // for (int i = 0; i < world_size; ++i) {
+    //     // printf("[%d] send_count_array[%d] %d\n", my_rank, i, send_count_array[i]);
+    //     // printf("[%d] sdispls array[%d] %d\n", my_rank, i, sdispls_array[i]);
+    // }
+
+    double step6 = MPI_Wtime();
+    if (my_rank == 0) {
+        printf("finihsed step 6 devide by main privot. elapse %lf\n", step6-begin_time);
     }
 
     // step7: global swap.
@@ -187,22 +218,27 @@ int main(int argc, char* argv[]) {
     for (int i = 1; i < world_size; ++i) {
         rdispls[i] = rdispls[i - 1] + all_count_array[i - 1];
     }
-    for (int i = 0; i < world_size; ++i) {
-        printf("from [%d]: all_count_array[%d] = %d\n", my_rank, i, all_count_array[i]);
-        printf("from [%d]: rdispls[%d] = %d\n", my_rank, i, rdispls[i]);
-    }
-    printf("[%d] I should receiv size %d\n", my_rank, my_recv_count);
+    // for (int i = 0; i < world_size; ++i) {
+    //     // printf("from [%d]: all_count_array[%d] = %d\n", my_rank, i, all_count_array[i]);
+    //     // printf("from [%d]: rdispls[%d] = %d\n", my_rank, i, rdispls[i]);
+    // }
+    // printf("[%d] I should receiv size %d\n", my_rank, my_recv_count);
     ul_t* my_swap_array = (ul_t*) malloc(sizeof(ul_t) * my_recv_count);
 
     MPI_Alltoallv(my_array, send_count_array, sdispls_array, MPI_UNSIGNED_LONG,
         my_swap_array, all_count_array, rdispls, MPI_UNSIGNED_LONG, MPI_COMM_WORLD);
 
 
-    for (int i = 0; i < my_recv_count; ++i) {
-        printf("[%d] recv %lu\n", my_rank, my_swap_array[i]);
+    // for (int i = 0; i < my_recv_count; ++i) {
+    //     // printf("[%d] recv %lu\n", my_rank, my_swap_array[i]);
+    // }
+
+    double step7 = MPI_Wtime();
+    if (my_rank == 0) {
+        printf("finished step 7 global swap. elapse %lf\n", step7-begin_time);
     }
 
-    // step6: n-way merge sort.
+    // step8: n-way merge sort.
     int* queue_beg = (int*) malloc(sizeof(int) * world_size);
     memcpy(queue_beg, rdispls, sizeof(int) * world_size);
 
@@ -230,6 +266,12 @@ int main(int argc, char* argv[]) {
             pq.push(State(my_swap_array[queue_beg[queue_id]], queue_id));
         }
     }
+
+    double step8 = MPI_Wtime();
+    if (my_rank == 0) {
+        printf("fnished step 8 local sort. elapse %lf\n", step8-begin_time);
+    }
+
     for (int i = 0; i < my_recv_count; ++i) {
         printf("[%d] sorted %lu\n", my_rank, result[i]);
     }

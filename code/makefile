@@ -8,7 +8,7 @@ psrs.o: psrs.cpp
 	${CC} ${CCFLAG} -c -o $@ $< 
 
 run: psrs.out
-	${RUN} -n 5 ./$< "binary_input"
+	${RUN} -n 4 ./$< "binary_input"
 
 gendata.out: gendata.c
 	gcc -o $@ $<
