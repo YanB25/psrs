@@ -1,6 +1,6 @@
 all: psrs.out
 CC=mpic++
-# CCFLAG="-std=C99"
+CCFLAG=-Ofast -std=c++11
 RUN=mpirun
 psrs.out: psrs.o 
 	${CC} -o $@ $^

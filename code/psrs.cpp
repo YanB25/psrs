@@ -3,7 +3,6 @@
 #include <cstdlib>
 #include <cassert>
 #include <cstring>
-#include "priority_queue.h"
 #define ul_t unsigned long
 int* scatterv_size(int size, int world_size) {
     /* 
