@@ -140,17 +140,30 @@ int main(int argc, char* argv[]) {
     printf("[%d] my array size is %d\n", my_rank, mySize);
     int myidx = 0;
     sdispls_array[0] = 0;
-    int before_count_sum = 0;
+    // int before_count_sum = 0;
     for (int i = 0; i < mySize; ++i) {
-        if (myidx < world_size - 1 && my_array[i] >= main_pivot[myidx]) {
-            // printf("debug [%d], myarray[%d] = %lu, main_pivot[%d] = %lu\n", my_rank, i, my_array[i], myidx, main_pivot[myidx]);
-            send_count_array[myidx] = i - before_count_sum;
-            before_count_sum += send_count_array[myidx];
+        // if (myidx < world_size - 1 && my_array[i] >= main_pivot[myidx]) {
+        //     printf("debug [%d], myarray[%d] = %lu, main_pivot[%d] = %lu\n", my_rank, i, my_array[i], myidx, main_pivot[myidx]);
+        //     send_count_array[myidx] = i - before_count_sum;
+        //     before_count_sum += send_count_array[myidx];
 
-            // sdispls_array[myidx + 1] = i; //not used anymore
-            while (my_array[i] >= main_pivot[myidx] && myidx < world_size - 1) {
+        //     // sdispls_array[myidx + 1] = i; //not used anymore
+        //     while (i + 1 < mySize && my_array[i + 1] > main_pivot[myidx] && myidx < world_size - 1) {
+        //         myidx++;
+        //     }
+        // }
+        printf("!! [%d] my_array[%d] %lu and main_pivot[%d] %lu\n", my_rank, i, my_array[i], myidx, main_pivot[myidx]);
+        if (my_array[i] < main_pivot[myidx]) {
+            send_count_array[myidx]++;
+            // before_count_sum++;
+        } else {
+            // array >= index
+            while (myidx < world_size && my_array[i] >= main_pivot[myidx]) {
                 myidx++;
+                printf("!!!! [%d] %d\n",my_rank, myidx);
             }
+            send_count_array[myidx]++;
+            // before_count_sum++;
         }
     }
     int before_disp_sum = 0;
@@ -158,9 +171,9 @@ int main(int argc, char* argv[]) {
         sdispls_array[i] = before_disp_sum;
         before_disp_sum += send_count_array[i];
     }
-    send_count_array[world_size - 1] = mySize - before_count_sum;
+    // send_count_array[world_size - 1] = mySize - before_count_sum;
     for (int i = 0; i < world_size; ++i) {
-        // printf("[%d] send_count_array[%d] %d\n", my_rank, i, send_count_array[i]);
+        printf("[%d] send_count_array[%d] %d\n", my_rank, i, send_count_array[i]);
         // printf("[%d] sdispls array[%d] %d\n", my_rank, i, sdispls_array[i]);
     }
 
