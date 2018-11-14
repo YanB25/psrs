@@ -3,8 +3,9 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <string.h>
-
+#include "priority_queue.h"
 #define ul_t unsigned long
+struct Node;
 int* scatterv_size(int size, int world_size) {
     /* 
     * return the scatter size used in mpi_scatterv
@@ -186,6 +187,27 @@ int main(int argc, char* argv[]) {
         printf("[%d] recv %lu\n", my_rank, my_swap_array[i]);
     }
 
+    // step6: n-way merge sort.
+    int* queue_beg = (int*) malloc(sizeof(int) * world_size);
+    memcpy(queue_beg, rdispls, sizeof(int) * world_size);
+
+    // Node* node = NULL;
+    // int idx = 0;
+    // for (int i = 0; i < world_size; ++i) {
+    //     int delta = 0;
+    //     while (queue_beg[i] + delta < rdispls[i]) {
+    //         if (!node) {
+    //             node = newNode(i, my_array[idx++]);
+    //         } else {
+    //             push(&node, i, my_array[idx++]);
+    //         }
+    //         delta++;
+    //     }
+    // }
+    // Node* pq_head = newNode
+    free(queue_beg);
+
+    free(my_swap_array);
 
     free(rdispls);
 
