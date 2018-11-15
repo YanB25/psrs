@@ -65,6 +65,7 @@ int main(int argc, char* argv[]) {
     if (my_rank == 0) {
         printf("begin.\n");
     }
+    printf("[%d] is working\n", my_rank);
 
     ul_t* array = NULL;
     ul_t* my_array = NULL;
@@ -228,9 +229,9 @@ int main(int argc, char* argv[]) {
     MPI_Alltoallv(my_array, send_count_array, sdispls_array, MPI_UNSIGNED_LONG,
         my_swap_array, all_count_array, rdispls, MPI_UNSIGNED_LONG, MPI_COMM_WORLD);
 
-
+    printf("[%d] recv count %d\n", my_rank, my_recv_count);
     // for (int i = 0; i < my_recv_count; ++i) {
-    //     // printf("[%d] recv %lu\n", my_rank, my_swap_array[i]);
+    //     printf("[%d] recv %lu\n", my_rank, my_swap_array[i]);
     // }
 
     double step7 = MPI_Wtime();
