@@ -15,7 +15,7 @@ struct State {
     }
 };
 
-int* scatterv_size(int size, int world_size) {
+int* scatterv_size(ul_t size, int world_size) {
     /* 
     * return the scatter size used in mpi_scatterv
     * @param size, length of the array
