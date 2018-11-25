@@ -590,6 +590,121 @@ while (!pq.empty()) {
 \end{lstlisting}
 \end{itemize}
 \end{figure}
+\section{其他代码}
+\subsection{读数据代码}
+读取数据的代码如\autoref{lst:readdata}所示。\\
+
+使用fread和fseek的方式读数据比较优雅。因为所有的数据都按8字节连续存储
+在二进制文件里，只需要将文件里的内容一模一样地复制进内存里，再以(unsigned long *)
+的形式去``解释''，即可拿到所有的数据。\\
+
+fseek的作用是调整文件指针的偏移量。将偏移量设置为sizeof(ul\_t)，即可跳过
+第一个元素来读取。其中ul\_t是一个typedef，是unsigned long的同名定义。
+\begin{figure}[!hbt]
+\begin{itemize}
+\item[] \begin{lstlisting}[style=mycpp, label=lst:readdata, caption=读取数据的代码]
+FILE* inputfile;
+inputfile = fopen(argv[1], "rb");
+
+fread(&SIZE, sizeof(ul_t), 1, inputfile);
+
+int* scatterv_size_array = scatterv_size(SIZE, world_size);
+
+if (my_rank == 0) {
+    fseek(inputfile, sizeof(ul_t), SEEK_SET);
+    array = (ul_t*) malloc(sizeof(ul_t) * SIZE);
+    fread(array, sizeof(ul_t), SIZE, inputfile);
+}
+\end{lstlisting}
+\end{itemize}
+\end{figure}
+
+
+\section{结果展示}
+跑了小型数据集，3个线程的结果如\autoref{lst:3-t}所示。5个线程的结果如
+\autoref{lst:5-t}所示。
+\begin{figure}[!hbt]
+\begin{itemize}
+\item[] \begin{lstlisting}[style=mycpp, label=lst:3-t, caption=三线程结果]
+    [0] sorted 1
+    [0] sorted 2
+    [0] sorted 2
+    [0] sorted 3
+    [0] sorted 3
+    [0] sorted 4
+    [0] sorted 4
+    [1] sorted 5
+    [1] sorted 5
+    [1] sorted 7
+    [1] sorted 7
+    [1] sorted 8
+    [1] sorted 8
+    [1] sorted 9
+    [1] sorted 10
+    [1] sorted 10
+    [1] sorted 13
+    [1] sorted 14
+    [2] sorted 15
+    [2] sorted 17
+    [2] sorted 17
+    [2] sorted 18
+    [2] sorted 19
+    [2] sorted 20
+    [2] sorted 20
+    [2] sorted 22
+    [2] sorted 24
+    [2] sorted 25
+    [2] sorted 25
+    [2] sorted 27
+    [2] sorted 27
+    [2] sorted 28
+    [2] sorted 29
+    [2] sorted 34
+\end{lstlisting}
+\end{itemize}
+\end{figure}
+
+\begin{figure}[!hbt]
+\begin{itemize}
+\item[] \begin{lstlisting}[style=mycpp, label=lst:5-t, caption=5线程结果]
+    [1] sorted 4
+    [0] sorted 1
+    [0] sorted 2
+    [0] sorted 2
+    [0] sorted 3
+    [0] sorted 3
+    [1] sorted 4
+    [1] sorted 5
+    [1] sorted 5
+    [2] sorted 7
+    [2] sorted 7
+    [2] sorted 8
+    [2] sorted 8
+    [2] sorted 9
+    [2] sorted 10
+    [2] sorted 10
+    [3] sorted 13
+    [3] sorted 14
+    [3] sorted 15
+    [3] sorted 15
+    [3] sorted 17
+    [3] sorted 17
+    [3] sorted 18
+    [4] sorted 19
+    [4] sorted 20
+    [4] sorted 20
+    [4] sorted 22
+    [4] sorted 24
+    [4] sorted 25
+    [4] sorted 25
+    [4] sorted 27
+    [4] sorted 27
+    [4] sorted 28
+    [4] sorted 29
+    [4] sorted 34
+\end{lstlisting}
+\end{itemize}
+\end{figure}
 
 % \begin{appendices}
 % \section{参考文献} \label{sec:reference}
