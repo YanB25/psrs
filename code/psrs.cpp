@@ -4,6 +4,7 @@
 #include <cassert>
 #include <cstring>
 #include <queue>
+#include <cmath>
 using std::priority_queue;
 #define ul_t unsigned long
 struct State {
@@ -76,7 +77,9 @@ int main(int argc, char* argv[]) {
     if (!inputfile) {
         printf("ERROR ! no such file %s\n", argv[1]);
     }
-    fread(&SIZE, sizeof(ul_t), 1, inputfile);
+    // fread(&SIZE, sizeof(ul_t), 1, inputfile);
+    sscanf(argv[2], "%lu", &SIZE);
+    SIZE = pow(2, SIZE);
 
     int* scatterv_size_array = scatterv_size(SIZE, world_size);
     int* scatterv_dipl_array = NULL;
