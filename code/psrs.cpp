@@ -63,10 +63,10 @@ int main(int argc, char* argv[]) {
     MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
 
     double begin_time = MPI_Wtime();
-    if (my_rank == 0) {
-        printf("begin.\n");
-    }
-    printf("[%d] is working\n", my_rank);
+    // if (my_rank == 0) {
+    //     printf("begin.\n");
+    // }
+    // printf("[%d] is working\n", my_rank);
 
     ul_t* array = NULL;
     ul_t* my_array = NULL;
@@ -232,7 +232,7 @@ int main(int argc, char* argv[]) {
     MPI_Alltoallv(my_array, send_count_array, sdispls_array, MPI_UNSIGNED_LONG,
         my_swap_array, all_count_array, rdispls, MPI_UNSIGNED_LONG, MPI_COMM_WORLD);
 
-    printf("[%d] recv count %d\n", my_rank, my_recv_count);
+    // printf("[%d] recv count %d\n", my_rank, my_recv_count);
     // for (int i = 0; i < my_recv_count; ++i) {
     //     printf("[%d] recv %lu\n", my_rank, my_swap_array[i]);
     // }
@@ -276,9 +276,9 @@ int main(int argc, char* argv[]) {
         printf("fnished step 8 local sort. elapse %lf\n", step8-begin_time);
     }
 
-    for (int i = 0; i < my_recv_count; ++i) {
-        printf("[%d] sorted %lu\n", my_rank, result[i]);
-    }
+    // for (int i = 0; i < my_recv_count; ++i) {
+    //     printf("[%d] sorted %lu\n", my_rank, result[i]);
+    // }
 
     free(all_count_array);
 
