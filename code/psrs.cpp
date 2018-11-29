@@ -76,6 +76,7 @@ int main(int argc, char* argv[]) {
     inputfile = fopen(argv[1], "rb");
     if (!inputfile) {
         printf("ERROR ! no such file %s\n", argv[1]);
+        fflush(stdout);
     }
     // fread(&SIZE, sizeof(ul_t), 1, inputfile);
     sscanf(argv[2], "%lu", &SIZE);
@@ -98,6 +99,7 @@ int main(int argc, char* argv[]) {
     double step0 = MPI_Wtime();
     if (my_rank == 0) {
         printf("finished step 0 data prepared. elapse %lf\n", step0-begin_time);
+        fflush(stdout);
     }
 
     // step1: divide averagely
@@ -110,6 +112,7 @@ int main(int argc, char* argv[]) {
     double step1 = MPI_Wtime();
     if (my_rank == 0) {
         printf("fnished step 1 divide averagely. elapse %lf\n", step1-begin_time);
+        fflush(stdout);
     }
 
     // step2: local sort
@@ -123,6 +126,7 @@ int main(int argc, char* argv[]) {
     double step2 = MPI_Wtime();
     if (my_rank == 0) {
         printf("finished step 2 local sort. elapse %lf\n", step2-begin_time);
+        fflush(stdout);
     }
 
     // step3: choose pivot
@@ -136,6 +140,7 @@ int main(int argc, char* argv[]) {
     double step3 = MPI_Wtime();
     if (my_rank == 0) {
         printf("finished step 3 choose pivot. elapse %lf\n", step3-begin_time);
+        fflush(stdout);
     }
 
     // step4: gather all and sort all the samples from p
@@ -151,6 +156,7 @@ int main(int argc, char* argv[]) {
 
         double step4 = MPI_Wtime();
         printf("finished step 4 gather all and sort. elapse %lf\n", step4-begin_time);
+        fflush(stdout);
 
         //step5: send main pivot to all process
         for (int i = 0; i < world_size - 1; ++i) {
@@ -165,6 +171,7 @@ int main(int argc, char* argv[]) {
     double step5 = MPI_Wtime();
     if (my_rank == 0) {
         printf("finished step 5 send main privot. elapse %lf\n", step5 - begin_time);
+        fflush(stdout);
     }
 
     // step6: devide by main pivot.
@@ -204,6 +211,7 @@ int main(int argc, char* argv[]) {
     double step6 = MPI_Wtime();
     if (my_rank == 0) {
         printf("finihsed step 6 devide by main privot. elapse %lf\n", step6-begin_time);
+        fflush(stdout);
     }
 
     // step7: global swap.
@@ -240,6 +248,7 @@ int main(int argc, char* argv[]) {
     double step7 = MPI_Wtime();
     if (my_rank == 0) {
         printf("finished step 7 global swap. elapse %lf\n", step7-begin_time);
+        fflush(stdout);
     }
 
     // step8: n-way merge sort.
@@ -274,6 +283,7 @@ int main(int argc, char* argv[]) {
     double step8 = MPI_Wtime();
     if (my_rank == 0) {
         printf("fnished step 8 local sort. elapse %lf\n", step8-begin_time);
+        fflush(stdout);
     }
 
     // for (int i = 0; i < my_recv_count; ++i) {
